@@ -1,0 +1,15 @@
+#my-floating-window {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 250px;
+  z-index: 2147483647; /* Ensure topping */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  border-radius: 6px;
+  font-family: sans-serif;
+  user-select: none;
+}
+
+#my-floating-window * {
+  user-select: none;
+}

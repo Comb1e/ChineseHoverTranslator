@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Chinese Hover Translator",
+  "version": "1.0",
+  "description": "Translate English words on hover.",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["scripting"],
+  "host_permissions": ["<all_urls>"],
+  "commands": {
+    "toggle-floating-window": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "Command+Shift+F"
+      },
+      "description": "Open/close floatingWindow"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["tooltip.css"]
+    }
+  ]
+}
