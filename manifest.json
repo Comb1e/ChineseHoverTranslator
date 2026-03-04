@@ -15,12 +15,26 @@
         "mac": "Command+Shift+F"
       },
       "description": "Open/close floatingWindow"
+    },
+    "translate": {
+      "suggested_key": {
+        "default": "Ctrl+Q",
+        "mac": "Command+Q"
+      },
+      "description": "Translate the hovered word"
+    },
+    "change-type": {
+      "suggested_key": {
+        "default": "Ctrl+Y",
+        "mac": "Command+Y"
+      },
+      "description": "Exchange language"
     }
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "js": ["md5.js", "content.js"],
       "css": ["tooltip.css"]
     }
   ]

@@ -26,10 +26,13 @@ floatingWindow.id = 'my-floating-window';
 
 floatingWindow.innerHTML = `
   <div id="floating-header" style="cursor: move; padding: 8px; background: #4A90E2; color: white; font-weight: bold;">
-    💬 Translator
+    💬 Translator(Auto->英)
     <span id="close-btn" style="float: right; cursor: pointer;">×</span>
   </div>
   <div id="floating-content" style="padding: 12px; background: #f9f9f9; border: 1px solid #ddd;">
+
+  </div>
+  <div id="dst-content" style="padding: 12px; background: #f9f9f9; border: 1px solid #ddd;">
 
   </div>
 `;
@@ -89,28 +92,19 @@ function toggleAvailable() {
   windowAvailable = !windowAvailable;
 }
 
-function setWindowDisavailable() {
-  windowAvailable = false;
-}
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "toggleAvailable") {
-    toggleAvailable();
-    toggleFloatingWindow();
-  }
-});
-
 const textContentDiv = document.getElementById('floating-content');
+const dstContentDiv = document.getElementById('dst-content');
+const headerContentDiv = document.getElementById('floating-header');
 
 const selection = window.getSelection();
 
 document.addEventListener('selectionchange', () => {
+  dstContentDiv.innerHTML = "";
   const text = selection.toString().trim();
-  console.log("hello");
+  textContentDiv.innerHTML = text;
   if (text) {
     setPositionChange();
     createFloatingWindow();
-    textContentDiv.innerHTML = text;
   }
   else {
     closeFloatingWindow();
@@ -126,11 +120,68 @@ function setPositionChange() {
   if (selection.rangeCount > 0) {
     floatingWindow.style.left = Math.max(0, rect.right) + 'px';
     floatingWindow.style.top = Math.max(0, rect.bottom) + 'px';
-    console.log(rect.right)
   }
 }
 
 window.addEventListener('scroll', setPositionChange, { passive: true });
 window.addEventListener('resize', setPositionChange);
+
+const appid = '20260302002564116';
+const api_key = 'iOCUyBZOBivPzXdAmILD';
+const salt = Date.now().toString();
+
+function generateSign(text) {
+  const str = appid + text + salt + api_key;
+  return MD5(str);
+}
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  switch (request.action) {
+    case "toggleAvailable": {
+      toggleAvailable();
+      toggleFloatingWindow();
+      break;
+    }
+    case "translate": {
+      const text = selection.toString().trim();
+      if (text) {
+        const sign = generateSign(text);
+        const q = encodeURIComponent(text);
+        chrome.runtime.sendMessage({
+          action: 'begin-translate',
+          q: q,
+          appid: appid,
+          salt: salt,
+          sign: sign,
+          api_key: api_key,
+        },
+        (response) => {
+          dstContentDiv.innerHTML = response.dst;
+        });
+      }
+      break;
+    }
+    case "changeType": {
+      switch (request.to) {
+        case "zh": {
+          headerContentDiv.innerHTML = "💬 Translator(Auto->中)";
+          break;
+        }
+        case "en": {
+          headerContentDiv.innerHTML = "💬 Translator(Auto->英)";
+          break;
+        }
+        default: {
+          headerContentDiv.innerHTML = "💬 Translator(Auto->?)";
+          break;
+        }
+      }
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+});
 
 })();
