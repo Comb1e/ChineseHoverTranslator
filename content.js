@@ -26,7 +26,7 @@ floatingWindow.id = 'my-floating-window';
 
 floatingWindow.innerHTML = `
   <div id="floating-header" style="cursor: move; padding: 8px; background: #4A90E2; color: white; font-weight: bold;">
-    💬 Translator(Auto->英)
+    💬 Translator(Auto->中)
     <span id="close-btn" style="float: right; cursor: pointer;">×</span>
   </div>
   <div id="floating-content" style="padding: 12px; background: #f9f9f9; border: 1px solid #ddd;">
@@ -126,12 +126,12 @@ function setPositionChange() {
 window.addEventListener('scroll', setPositionChange, { passive: true });
 window.addEventListener('resize', setPositionChange);
 
-const appid = '20260302002564116';
-const api_key = 'iOCUyBZOBivPzXdAmILD';
+const appid = 'Your APPID';
+const appkey = 'Your Appkey';
 const salt = Date.now().toString();
 
 function generateSign(text) {
-  const str = appid + text + salt + api_key;
+  const str = appid + text + salt + appkey;
   return MD5(str);
 }
 
@@ -153,7 +153,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           appid: appid,
           salt: salt,
           sign: sign,
-          api_key: api_key,
         },
         (response) => {
           dstContentDiv.innerHTML = response.dst;

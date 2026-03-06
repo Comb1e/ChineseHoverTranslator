@@ -1,6 +1,6 @@
 // background.js
 const from = 'auto';
-to = 'en';
+to = 'zh';
 chrome.commands.onCommand.addListener((command) => {
   if (command === "toggle-floating-window") {
     // 向当前活跃标签页的 content script 发送消息
